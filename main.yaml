@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Main template for AWS infrastructure
+
+Resources:
+  VPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/buckettestcloudformation/vpc.yaml
+
+  RouteTablesStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/buckettestcloudformation/route-tables.yaml
+      Parameters:
+        VPCId: !GetAtt VPCStack.Outputs.VPCId
+        PublicSubnetId: !GetAtt VPCStack.Outputs.PublicSubnetId
+        PrivateSubnetId: !GetAtt VPCStack.Outputs.PrivateSubnetId
+        InternetGatewayId: !GetAtt VPCStack.Outputs.InternetGatewayId
+        NATGatewayId: !GetAtt VPCStack.Outputs.NATGatewayId
+
+  EC2Stack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/buckettestcloudformation/ec2.yaml
+      Parameters:
+        VPCId: !GetAtt VPCStack.Outputs.VPCId
+        PublicSubnetId: !GetAtt VPCStack.Outputs.PublicSubnetId
+        PrivateSubnetId: !GetAtt VPCStack.Outputs.PrivateSubnetId
+
+  SecurityGroupsStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/buckettestcloudformation/security-groups.yaml
+      Parameters:
+        VPCId: !GetAtt VPCStack.Outputs.VPCId
+        PublicEC2Id: !GetAtt EC2Stack.Outputs.PublicEC2Id
+        PrivateEC2Id: !GetAtt EC2Stack.Outputs.PrivateEC2Id
+
+Outputs:
+  VPCId:
+    Value: !GetAtt VPCStack.Outputs.VPCId
+  PublicSubnetId:
+    Value: !GetAtt VPCStack.Outputs.PublicSubnetId
+  PrivateSubnetId:
+    Value: !GetAtt VPCStack.Outputs.PrivateSubnetId
+  PublicEC2Id:
+    Value: !GetAtt EC2Stack.Outputs.PublicEC2Id
+  PrivateEC2Id:
+    Value: !GetAtt EC2Stack.Outputs.PrivateEC2Id

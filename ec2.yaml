@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: EC2 Instances
+
+Parameters:
+  VPCId:
+    Type: String
+  PublicSubnetId:
+    Type: String
+  PrivateSubnetId:
+    Type: String
+
+Resources:
+  PublicEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0fff1b9a61dec8a5f  # Amazon Linux 2 AMI ID (update as needed)
+      SubnetId: !Ref PublicSubnetId
+      Tags:
+        - Key: Name
+          Value: Public EC2 Instance
+
+  PrivateEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0fff1b9a61dec8a5f  # Amazon Linux 2 AMI ID (update as needed)
+      SubnetId: !Ref PrivateSubnetId
+      Tags:
+        - Key: Name
+          Value: Private EC2 Instance
+
+Outputs:
+  PublicEC2Id:
+    Description: Public EC2 Instance ID
+    Value: !Ref PublicEC2Instance
+  PrivateEC2Id:
+    Description: Private EC2 Instance ID
+    Value: !Ref PrivateEC2Instance
