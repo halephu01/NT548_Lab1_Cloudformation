@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Security Groups for EC2 instances
+
+Parameters:
+  EnvironmentName:
+    Description: An environment name that is prefixed to resource names
+    Type: String
+  VPC:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC ID
+  AllowedSSHIP:
+    Description: The IP address range that can be used to SSH to the EC2 instances
+    Type: String
+    Default: 14.169.4.187/32
+
+Resources:
+  PublicSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH access from specified IP
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref AllowedSSHIP
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Public SG-nhom6
+
+  PrivateSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow SSH access from Public EC2
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          SourceSecurityGroupId: !Ref PublicSecurityGroup
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Private SG-nhom6
+
+Outputs:
+  PublicSecurityGroup:
+    Description: Security group for public EC2 instances
+    Value: !Ref PublicSecurityGroup
+    Export:
+      Name: !Sub ${EnvironmentName}-PublicSG-nhom6
+
+  PrivateSecurityGroup:
+    Description: Security group for private EC2 instances
+    Value: !Ref PrivateSecurityGroup
+    Export:
+      Name: !Sub ${EnvironmentName}-PrivateSG-nhom6

@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Main template for VPC and EC2 deployment
+
+Parameters:
+  EnvironmentName:
+    Description: An environment name that is prefixed to resource names
+    Type: String
+    Default: MyVPC
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: nhom6
+
+Resources:
+  VPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://nhom6-bucket.s3.amazonaws.com/vpc.yaml
+      Parameters:
+        EnvironmentName: !Sub ${EnvironmentName}-${AWS::StackName}
+
+  SecurityGroupsStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://nhom6-bucket.s3.amazonaws.com/security-groups.yaml
+      Parameters:
+        EnvironmentName: !Ref EnvironmentName
+        VPC: !GetAtt VPCStack.Outputs.VPC
+
+  EC2Stack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://nhom6-bucket.s3.amazonaws.com/ec2.yaml
+      Parameters:
+        EnvironmentName: !Ref EnvironmentName
+        VPC: !GetAtt VPCStack.Outputs.VPC
+        KeyName: !Ref KeyName
+        PublicSubnet1: !GetAtt VPCStack.Outputs.PublicSubnet1
+        PrivateSubnet1: !GetAtt VPCStack.Outputs.PrivateSubnet1
+        PublicSecurityGroup: !GetAtt SecurityGroupsStack.Outputs.PublicSecurityGroup
+        PrivateSecurityGroup: !GetAtt SecurityGroupsStack.Outputs.PrivateSecurityGroup
+
+Outputs:
+  VPC:
+    Description: A reference to the created VPC
+    Value: !GetAtt VPCStack.Outputs.VPC
+    Export:
+      Name: !Sub ${EnvironmentName}-VPCID-nhom6
+
+  PublicSubnets:
+    Description: A list of the public subnets
+    Value: !GetAtt VPCStack.Outputs.PublicSubnets
+    Export:
+      Name: !Sub ${EnvironmentName}-PUBLIC-SUBNETS-nhom6
+
+  PrivateSubnets:
+    Description: A list of the private subnets
+    Value: !GetAtt VPCStack.Outputs.PrivateSubnets
+    Export:
+      Name: !Sub ${EnvironmentName}-PRIVATE-SUBNETS-nhom6
+
+  PublicEC2Instance:
+    Description: Public EC2 Instance ID
+    Value: !GetAtt EC2Stack.Outputs.PublicEC2Instance
+    Export:
+      Name: !Sub ${EnvironmentName}-PUBLIC-EC2-nhom6
+
+  PrivateEC2Instance:
+    Description: Private EC2 Instance ID
+    Value: !GetAtt EC2Stack.Outputs.PrivateEC2Instance
+    Export:
+      Name: !Sub ${EnvironmentName}-PRIVATE-EC2-nhom6

@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: EC2 instances in public and private subnets
+
+Parameters:
+  EnvironmentName:
+    Description: An environment name that is prefixed to resource names
+    Type: String
+  VPC:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC ID
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet::Id
+    Description: Public Subnet ID
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet::Id
+    Description: Private Subnet ID
+  PublicSecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: Public Security Group ID
+  PrivateSecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: Private Security Group ID
+  EC2InstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t2.micro
+      - t2.small
+      - t2.medium
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: nhom6
+
+Resources:
+  PublicEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref EC2InstanceType
+      KeyName: !Ref KeyName
+      ImageId: ami-0aa7d40eeae50c9a9  # Amazon Linux 2 AMI (HVM) - Kernel 5.10, SSD Volume Type
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet:
+            - !Ref PublicSecurityGroup
+          SubnetId: !Ref PublicSubnet1
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Public EC2-nhom6
+
+  PrivateEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref EC2InstanceType
+      KeyName: !Ref KeyName
+      ImageId: ami-0aa7d40eeae50c9a9  # Amazon Linux 2 AMI (HVM) - Kernel 5.10, SSD Volume Type
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "false"
+          DeviceIndex: "0"
+          GroupSet:
+            - !Ref PrivateSecurityGroup
+          SubnetId: !Ref PrivateSubnet1
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Private EC2-nhom6
+
+Outputs:
+  PublicEC2Instance:
+    Description: Public EC2 Instance ID
+    Value: !Ref PublicEC2Instance
+    Export:
+      Name: !Sub ${EnvironmentName}-PublicEC2-nhom6
+
+  PrivateEC2Instance:
+    Description: Private EC2 Instance ID
+    Value: !Ref PrivateEC2Instance
+    Export:
+      Name: !Sub ${EnvironmentName}-PrivateEC2-nhom6
