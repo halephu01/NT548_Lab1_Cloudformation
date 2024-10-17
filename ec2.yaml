@@ -1,39 +1,51 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: EC2 Instances
+Description: EC2 Instances Module
 
 Parameters:
-  VPCId:
-    Type: String
   PublicSubnetId:
     Type: String
+    Description: Public Subnet ID
   PrivateSubnetId:
     Type: String
+    Description: Private Subnet ID
+  PublicSecurityGroupId:
+    Type: String
+    Description: Public Security Group ID
+  PrivateSecurityGroupId:
+    Type: String
+    Description: Private Security Group ID
 
 Resources:
   PublicEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
-      ImageId: ami-0fff1b9a61dec8a5f  # Amazon Linux 2 AMI ID (update as needed)
+      ImageId: ami-0f71013b2c8bd2c29
       SubnetId: !Ref PublicSubnetId
+      SecurityGroupIds: 
+        - !Ref PublicSecurityGroupId
+      KeyName: nhom6
       Tags:
         - Key: Name
-          Value: Public EC2 Instance
+          Value: Nhom6-Public
 
   PrivateEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
-      ImageId: ami-0fff1b9a61dec8a5f  # Amazon Linux 2 AMI ID (update as needed)
+      ImageId: ami-0f71013b2c8bd2c29
       SubnetId: !Ref PrivateSubnetId
+      SecurityGroupIds: 
+        - !Ref PrivateSecurityGroupId
+      KeyName: nhom6
       Tags:
         - Key: Name
-          Value: Private EC2 Instance
+          Value: Nhom6-Private
 
 Outputs:
-  PublicEC2Id:
+  PublicInstanceId:
     Description: Public EC2 Instance ID
     Value: !Ref PublicEC2Instance
-  PrivateEC2Id:
+  PrivateInstanceId:
     Description: Private EC2 Instance ID
     Value: !Ref PrivateEC2Instance

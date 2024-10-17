@@ -1,17 +1,22 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Route Tables for VPC
+Description: Route Tables Module
 
 Parameters:
   VPCId:
     Type: String
+    Description: VPC ID
   PublicSubnetId:
     Type: String
+    Description: Public Subnet ID
   PrivateSubnetId:
     Type: String
+    Description: Private Subnet ID
   InternetGatewayId:
     Type: String
-  NATGatewayId:
+    Description: Internet Gateway ID
+  NatGatewayId:
     Type: String
+    Description: NAT Gateway ID
 
 Resources:
   PublicRouteTable:
@@ -20,21 +25,7 @@ Resources:
       VpcId: !Ref VPCId
       Tags:
         - Key: Name
-          Value: Public Route Table
-
-  PublicRoute:
-    Type: AWS::EC2::Route
-    DependsOn: AttachGateway
-    Properties:
-      RouteTableId: !Ref PublicRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGatewayId
-
-  PublicSubnetRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnetId
-      RouteTableId: !Ref PublicRouteTable
+          Value: PublicRouteTable
 
   PrivateRouteTable:
     Type: AWS::EC2::RouteTable
@@ -42,14 +33,27 @@ Resources:
       VpcId: !Ref VPCId
       Tags:
         - Key: Name
-          Value: Private Route Table
+          Value: PrivateRouteTable
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGatewayId
 
   PrivateRoute:
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref PrivateRouteTable
       DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NATGatewayId
+      NatGatewayId: !Ref NatGatewayId
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetId
+      RouteTableId: !Ref PublicRouteTable
 
   PrivateSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation

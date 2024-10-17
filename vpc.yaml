@@ -1,59 +1,16 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: VPC and related resources
+Description: VPC Module
 
 Resources:
   MyVPC:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: 10.0.0.0/16
-      EnableDnsHostnames: true
       EnableDnsSupport: true
-      InstanceTenancy: default
+      EnableDnsHostnames: true
       Tags:
         - Key: Name
           Value: MyVPC
-
-  PublicSubnet:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref MyVPC
-      AvailabilityZone: !Select [0, !GetAZs ""]
-      CidrBlock: 10.0.1.0/24
-      MapPublicIpOnLaunch: true
-      Tags:
-        - Key: Name
-          Value: Public Subnet
-
-  PrivateSubnet:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref MyVPC
-      AvailabilityZone: !Select [1, !GetAZs ""]
-      CidrBlock: 10.0.2.0/24
-      MapPublicIpOnLaunch: false
-      Tags:
-        - Key: Name
-          Value: Private Subnet
-
-  InternetGateway:
-    Type: AWS::EC2::InternetGateway
-
-  AttachGateway:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId: !Ref MyVPC
-      InternetGatewayId: !Ref InternetGateway
-
-  NATGateway:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NATGatewayEIP.AllocationId
-      SubnetId: !Ref PublicSubnet
-
-  NATGatewayEIP:
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: vpc
 
   DefaultSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -66,24 +23,4 @@ Outputs:
     Description: VPC ID
     Value: !Ref MyVPC
     Export:
-      Name: !Sub "${AWS::StackName}-VPCID"
-  PublicSubnetId:
-    Description: Public Subnet ID
-    Value: !Ref PublicSubnet
-    Export:
-      Name: !Sub "${AWS::StackName}-PublicSubnetID"
-  PrivateSubnetId:
-    Description: Private Subnet ID
-    Value: !Ref PrivateSubnet
-    Export:
-      Name: !Sub "${AWS::StackName}-PrivateSubnetID"
-  InternetGatewayId:
-    Description: Internet Gateway ID
-    Value: !Ref InternetGateway
-    Export:
-      Name: !Sub "${AWS::StackName}-InternetGatewayID"
-  NATGatewayId:
-    Description: NAT Gateway ID
-    Value: !Ref NATGateway
-    Export:
-      Name: !Sub "${AWS::StackName}-NATGatewayID"
+      Name: !Sub "${AWS::StackName}-VPCId"

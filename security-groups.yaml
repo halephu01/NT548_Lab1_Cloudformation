@@ -1,53 +1,44 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Security Groups for EC2 Instances
+Description: Security Groups Module
 
 Parameters:
   VPCId:
     Type: String
-  PublicEC2Id:
-    Type: String
-  PrivateEC2Id:
-    Type: String
+    Description: VPC ID
 
 Resources:
-  PublicEC2SecurityGroup:
+  PublicSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Security group for public EC2 instance
+      GroupName: PublicSecurityGroup
+      GroupDescription: Allow SSH and SCP from specific IP
       VpcId: !Ref VPCId
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 0.0.0.0/0  # Replace with your specific IP for better security
+          CidrIp: 171.250.164.134/32
 
-  PrivateEC2SecurityGroup:
+  PrivateSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Security group for private EC2 instance
+      GroupName: PrivateSecurityGroup
+      GroupDescription: Allow SSH from Public EC2
       VpcId: !Ref VPCId
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          SourceSecurityGroupId: !Ref PublicEC2SecurityGroup
-
-  PublicEC2SecurityGroupAssociation:
-    Type: AWS::EC2::SecurityGroupAssociation
-    Properties:
-      InstanceId: !Ref PublicEC2Id
-      SecurityGroupId: !Ref PublicEC2SecurityGroup
-
-  PrivateEC2SecurityGroupAssociation:
-    Type: AWS::EC2::SecurityGroupAssociation
-    Properties:
-      InstanceId: !Ref PrivateEC2Id
-      SecurityGroupId: !Ref PrivateEC2SecurityGroup
+          SourceSecurityGroupId: !Ref PublicSecurityGroup
 
 Outputs:
-  PublicEC2SecurityGroupId:
-    Description: Public EC2 Security Group ID
-    Value: !Ref PublicEC2SecurityGroup
-  PrivateEC2SecurityGroupId:
-    Description: Private EC2 Security Group ID
-    Value: !Ref PrivateEC2SecurityGroup
+  PublicSecurityGroupId:
+    Description: Public Security Group ID
+    Value: !Ref PublicSecurityGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-PublicSecurityGroupId"
+  PrivateSecurityGroupId:
+    Description: Private Security Group ID
+    Value: !Ref PrivateSecurityGroup
+    Export:
+      Name: !Sub "${AWS::StackName}-PrivateSecurityGroupId"
