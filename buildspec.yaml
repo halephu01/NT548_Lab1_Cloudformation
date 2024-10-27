@@ -10,11 +10,11 @@ phases:
   pre_build:
     commands:
       - echo Running cfn-lint...
-      - cfn-lint your-template.yaml
+      - cfn-lint template.yaml
   build:
     commands:
       - echo Running taskcat...
-      - taskcat test run --config your-taskcat-config.yml
+      - taskcat test run --config taskcat-config.yml
 artifacts:
   files:
     - '**/*'
