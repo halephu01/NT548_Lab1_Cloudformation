@@ -1,0 +1,20 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.x
+    commands:
+      - echo Installing cfn-lint and taskcat...
+      - pip install cfn-lint taskcat
+  pre_build:
+    commands:
+      - echo Running cfn-lint...
+      - cfn-lint your-template.yaml
+  build:
+    commands:
+      - echo Running taskcat...
+      - taskcat test run --config your-taskcat-config.yml
+artifacts:
+  files:
+    - '**/*'
