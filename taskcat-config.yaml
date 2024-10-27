@@ -6,6 +6,6 @@ tests:
   my_test:
     template: template.yaml
     parameters:
-      BucketName: "nhom6-lab1"
-    s3_bucket: nhom6-lab1
+      BucketName: "nhom6-lab"
+    s3_bucket: nhom6-lab
 

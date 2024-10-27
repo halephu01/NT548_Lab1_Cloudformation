@@ -10,9 +10,9 @@ Resources:
   MyS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Ref nhom6-lab1
+      BucketName: !Ref nhom6-lab
 Outputs:
   BucketNameOutput:
     Description: "The name of the S3 bucket"
-    Value: !Ref nhom6-lab1
+    Value: !Ref nhom6-lab
 

@@ -3,18 +3,17 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.x
+      python: 3.9
     commands:
-      - echo Installing cfn-lint and taskcat...
       - pip install cfn-lint taskcat
   pre_build:
     commands:
-      - echo Running cfn-lint...
-      - cfn-lint template.yaml
+      - echo "Running cfn-lint..."
+      - cfn-lint s3://nhom6-lab/main.yaml
   build:
     commands:
-      - echo Running taskcat...
-      - taskcat test run --config taskcat-config.yml
+      - echo "Running Taskcat..."
+      - taskcat test run
 artifacts:
   files:
     - '**/*'

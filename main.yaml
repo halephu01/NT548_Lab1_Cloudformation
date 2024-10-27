@@ -5,19 +5,19 @@ Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://nhom6-lab1.s3.ap-southeast-2.amazonaws.com/vpc.yaml
+      TemplateURL: https://nhom6-lab.s3.ap-southeast-2.amazonaws.com/vpc.yaml
 
   SubnetsStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://nhom6-lab1.s3.ap-southeast-2.amazonaws.com/subnets.yaml
+      TemplateURL: https://nhom6-lab.s3.ap-southeast-2.amazonaws.com/subnets.yaml
       Parameters:
         VPCId: !GetAtt VPCStack.Outputs.VPCId
 
   GatewaysStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://nhom6-lab1.s3.ap-southeast-2.amazonaws.com/gateways.yaml
+      TemplateURL: https://nhom6-lab.s3.ap-southeast-2.amazonaws.com/gateways.yaml
       Parameters:
         VPCId: !GetAtt VPCStack.Outputs.VPCId
         PublicSubnetId: !GetAtt SubnetsStack.Outputs.PublicSubnetId
@@ -25,7 +25,7 @@ Resources:
   RouteTablesStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://nhom6-lab1.s3.ap-southeast-2.amazonaws.com/route-tables.yaml
+      TemplateURL: https://nhom6-lab.s3.ap-southeast-2.amazonaws.com/route-tables.yaml
       Parameters:
         VPCId: !GetAtt VPCStack.Outputs.VPCId
         PublicSubnetId: !GetAtt SubnetsStack.Outputs.PublicSubnetId
@@ -36,14 +36,14 @@ Resources:
   SecurityGroupsStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://nhom6-lab1.s3.ap-southeast-2.amazonaws.com/security-groups.yaml
+      TemplateURL: https://nhom6-lab.s3.ap-southeast-2.amazonaws.com/security-groups.yaml
       Parameters:
         VPCId: !GetAtt VPCStack.Outputs.VPCId
 
   EC2InstancesStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://nhom6-lab1.s3.ap-southeast-2.amazonaws.com/ec2.yaml
+      TemplateURL: https://nhom6-lab.s3.ap-southeast-2.amazonaws.com/ec2.yaml
       Parameters:
         PublicSubnetId: !GetAtt SubnetsStack.Outputs.PublicSubnetId
         PrivateSubnetId: !GetAtt SubnetsStack.Outputs.PrivateSubnetId
