@@ -5,14 +5,18 @@ phases:
     runtime-versions:
       python: 3.9
     commands:
+      - echo "Updating pip to the latest version"
+      - /root/.pyenv/versions/3.9.1/bin/python3.9 -m pip install --upgrade pip
+      - echo "Installing cfn-lint and taskcat"
       - pip install cfn-lint taskcat
   pre_build:
     commands:
-      - echo "Running cfn-lint..."
-      - cfn-lint s3://nhom6-lab/main.yaml
+      - echo "Preparing to validate CloudFormation templates"
   build:
     commands:
-      - echo "Running Taskcat..."
+      - echo "Running cfn-lint on CloudFormation template"
+      - cfn-lint main.yaml
+      - echo "Running Taskcat tests"
       - taskcat test run
 artifacts:
   files:

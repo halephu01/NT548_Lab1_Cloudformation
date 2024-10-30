@@ -1,0 +1,11 @@
+project:
+  name: nhom6-lab2
+
+tests:
+  my-test:
+    template: main.yaml
+    parameters:
+      ParameterKey1: DefaultValue1  
+      ParameterKey2: DefaultValue2  
+    regions:
+      - ap-southeast-2
