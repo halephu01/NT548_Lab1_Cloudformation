@@ -1,0 +1,37 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+    commands:
+      - echo "Installing cfn-lint and taskcat"
+      - pip install cfn-lint taskcat
+  pre_build:
+    commands:
+      - echo "Checking if S3 bucket nhom6-lab exists"
+      - |
+        if aws s3api head-bucket --bucket nhom6-lab 2>/dev/null; then
+          echo "S3 bucket nhom6-lab already exists"
+        else
+          echo "Creating S3 bucket nhom6-lab"
+          aws s3api create-bucket --bucket nhom6-lab --region ap-southeast-2 --create-bucket-configuration LocationConstraint=ap-southeast-2
+        fi
+      - echo "Copying files from CodeCommit to S3 bucket nhom6-lab"
+      - aws s3 cp . s3://nhom6-lab/ --recursive
+  build:
+    commands:
+      - echo "Downloading CloudFormation template from S3"
+      - aws s3 cp s3://nhom6-lab/main.yaml ./main.yaml
+      - echo "Running cfn-lint on CloudFormation template"
+      - cfn-lint ./main.yaml
+      - echo "Downloading Taskcat config from S3"
+      - aws s3 cp s3://nhom6-lab/.taskcat.yml ./.taskcat.yml
+      - ls -la .
+      - echo "Running Taskcat tests"
+      - taskcat test run 
+artifacts:
+  files:
+    - '**/*'
+  base-directory: '.'
+  discard-paths: yes
